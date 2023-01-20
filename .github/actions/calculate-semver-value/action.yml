@@ -1,0 +1,32 @@
+name: 'Calculate SemVer Value'
+description: 'Calculates a SemVer value based on a label'
+inputs:
+  github_token:
+    required: true
+    description: 'The GitHub token'
+  default_to_highest:
+    required: false
+    description: 'Use the largest existing tag rather than the tag on the base_ref'
+    default: 'true'
+outputs:
+  version:
+    description: "SemVer value"
+    value: ${{ steps.calculate.outputs.version }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Parse the SemVer label
+      id: label
+      uses: UKHomeOffice/match-label-action@v1
+      with:
+        labels: minor,major,patch
+        mode: singular
+
+    - name: Calculate SemVer value
+      id: calculate
+      uses: UKHomeOffice/semver-calculate-action@v1
+      with:
+        increment: ${{ steps.label.outputs.matchedLabels }}
+        github_token: ${{ inputs.github_token }}
+        default_to_highest: ${{ inputs.default_to_highest }}

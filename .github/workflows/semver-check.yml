@@ -1,0 +1,23 @@
+name: 'SemVer label Checker'
+on:
+  pull_request:
+    types: [ labeled, unlabeled, opened, reopened, synchronize ]
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: 'Calculate SemVer Value'
+    if: |
+      contains(github.event.pull_request.labels.*.name, 'skip-release') == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Calculate SemVer value
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/calculate-semver-value@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_to_highest: ${{ github.base_ref == 'main' }}
