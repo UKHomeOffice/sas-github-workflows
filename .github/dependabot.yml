@@ -8,6 +8,8 @@ updates:
       prefix: "⬆️ "
     pull-request-branch-name:
       separator: "-"
+    reviewers:
+      - "UKHomeOffice/sas-github-workflow"
     labels:
       - "patch"
       - "dependencies"
