@@ -1,0 +1,46 @@
+name: 'SemVer Tag'
+on:
+  pull_request:
+    types: [ closed ]
+  workflow_call:
+    inputs:
+      moveMajor:
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    name: 'Main SemVer Tag'
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'skip-release') == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Calculate SemVer value
+        id: calculate
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/calculate-semver-value@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_to_highest: ${{ github.base_ref == 'main' }}
+
+      - name: Tag Repository
+        uses: UKHomeOffice/semver-tag-action@v3
+        with:
+          tag: ${{ steps.calculate.outputs.version }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          move_major_tag: ${{ inputs.moveMajor || 'true' }}
+
+      - name: Post failure to Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1
+        if: ${{ failure() }}
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: "GitHub Action failure: ${{github.repository}}\nRun: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}\nOriginating PR: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
