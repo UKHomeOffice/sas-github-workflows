@@ -1,0 +1,29 @@
+name: 'Scan Docker Image'
+description: 'Builds and scans a docker image using Anchore'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        tags: localbuild/testimage:latest
+        load: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Anchore scan
+      uses: anchore/scan-action@v3
+      id: scan
+      with:
+        image: "localbuild/testimage:latest"
+        fail-build: false
+
+    - name: upload Anchore scan SARIF report
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif }}
