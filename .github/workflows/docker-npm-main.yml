@@ -1,0 +1,57 @@
+name: 'Docker branch - npm'
+on:
+  workflow_call:
+    inputs:
+      nodeVersion:
+        required: false
+        type: string
+        default: '18.x'
+      installCommand:
+        required: false
+        type: string
+      buildCommand:
+        required: false
+        type: string
+      lintCommand:
+        required: false
+        type: string
+      registry:
+        required: false
+        type: string
+      image:
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker:
+    name: 'Branch Publish'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Build project
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v1
+        with:
+          node_version: ${{ inputs.nodeVersion }}
+          install_command: ${{ inputs.installCommand }}
+          build_command: ${{ inputs.buildCommand }}
+
+      - name: Publish branch image
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v1
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}
+          password: ${{ secrets.DOCKER_PASSWORD || secrets.QUAY_ROBOT_TOKEN }}
+          tag: ${{ github.event.pull_request.head.sha }}
+          tag_latest: ${{ github.base_ref == 'main' }}
+          image: ${{ inputs.image }}

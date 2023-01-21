@@ -21,6 +21,63 @@ jobs:
 ```
 
 ----
+## Scan a docker image using Anchore on a branch - npm
+
+This workflow builds and scans a docker image using Anchore. 
+Optionally it pushes the image to a repository, tagging it with the SHA.
+
+* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
+* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
+* Will only push with a label of `smoketest`
+
+### docker-npm-branch.yml
+
+```yaml
+name: 'Docker Build Branch'
+on:
+  pull_request:
+    types: [ labeled, opened, reopened, synchronize ]
+
+jobs:
+  build:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/docker-npm-branch.yml@v1
+    with:
+      installCommand: 'ci --production=false --no-optional'
+      buildCommand: 'build-prod'
+      image: 'quay.io/ukhomeofficedigital/hocs-frontend'
+      repository: 'quay.io'
+    secrets: inherit
+```
+
+----
+## Publish a docker image - npm
+
+This workflow builds and publishes a docker image.
+Optionally it pushes the image to a repository, tagging it with the SHA.
+
+* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
+* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
+
+### docker-npm-main.yml
+
+```yaml
+name: 'Docker Build Main'
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  build:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/docker-npm-main.yml@v1
+    with:
+      installCommand: 'ci --production=false --no-optional'
+      buildCommand: 'build-prod'
+      image: 'quay.io/ukhomeofficedigital/hocs-frontend'
+    secrets: inherit
+
+```
+
+----
 ## Check a PR has a valid SemVer increment
 
 This workflow ensures one `minor`,`major`,`patch`, or `skip-release` label is present on a PR.
