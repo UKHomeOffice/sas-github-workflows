@@ -1,0 +1,33 @@
+name: 'Start Integration Infrastructure'
+description: 'This action installs required dependencies and starts the infrastructure required for integration testing'
+inputs:
+  os_dependencies:
+    required: false
+    description: "Software dependencies to install e.g. libreoffice"
+  docker_compose_command:
+    required: false
+    description: 'Docker compose command and file path e.g. -f ./ci/docker-compose.yml up'
+  docker_compose_components:
+    required: false
+    description: 'List of components to start up e.g. localstack, postgres'
+  healthcheck_script:
+    required: false
+    description: 'List of components to start uo e.g. ./ci/healthcheck.sh'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install OS dependencies
+      if: ${{ inputs.os_dependencies || false}}
+      run: sudo apt-get update && sudo apt-get install ${{ inputs.os_dependencies }} --no-install-recommends  --no-install-suggests -y
+      shell: bash
+
+    - name: Start docker-compose infrastructure
+      if:  ${{ inputs.docker_compose_components || false }}
+      run: docker-compose -f ${{ inputs.docker_compose_command || './ci/docker-compose.yml' }} up -d ${{ inputs.docker_compose_components }}
+      shell: bash
+
+    - name: Start healthcheck
+      if: ${{ inputs.healthcheck_script || false }}
+      run:  ${{ inputs.healthcheck_script || './ci/healthcheck.sh' }}
+      shell: bash

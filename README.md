@@ -39,3 +39,52 @@ jobs:
   check:
     uses: UKHomeOffice/sas-github-actions/.github/workflows/semver-tag.yml@v1
 ```
+----
+## Lint and test an npm based project
+
+This will run `npm run lint` and `npm test` on a repository after building it with `npm ci`.
+* It will run tests in parallel against 2 versions of node; `18`, `19`.
+* Optionally this workflow will install dependencies required to run tests.
+* Optionally this workflow will start components using docker-compose to run end-to-end tests against.
+
+  ### inputs:
+
+| input | description| required | default | effective command |
+|---|---|---|---|---|
+| nodeVersionMatrix | | false | [ "18.x", "19.x" ] | |
+| dependencyCommand | | false | 'ci' | npm --loglevel warn ci |
+| buildCommand | | false | 'build' | npm run build |
+| lintCommand | | false | 'lint' | npm run lint |
+| osDependencies | | false | null | sudo apt-get install -y [packages] |
+| dockerComposeCommand | | false | './ci/docker-compose.yml' | docker-compose -f ./ci/docker-compose.yml up -d [components] |
+| dockerComposeComponents | | false | null | |
+| healthcheckScript | | false | './ci/healthcheck.sh' | bash ./ci/healthcheck.sh |
+
+### test-npm.yml - unit tests only
+```yaml
+name: 'Test'
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+
+jobs:
+  test:
+    uses: UKHomeOffice/sas-github-actions/.github/workflows/test-npm.yml@v1
+```````
+
+### test-npm.yml - install extra OS deps and docker compose with custom npm arguments
+```yaml
+name: 'Test'
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+
+jobs:
+  test:
+    uses: UKHomeOffice/sas-github-actions/.github/workflows/test-npm.yml@v1
+    with:
+      dependencyCommand: 'ci --production=false --no-optional'
+      buildCommand: 'build-prod'
+      osDependencies: 'libreoffice'
+      dockerComposeComponents: 'postgres'
+```````
