@@ -1,0 +1,53 @@
+name: 'Actions - diff check'
+on:
+  workflow_call:
+    inputs:
+      nodeVersionMatrix:
+        required: false
+        type: string
+        default: '[ "18.x" ]'
+      dependencyCommand:
+        required: false
+        type: string
+      buildCommand:
+        required: false
+        type: string
+      lintCommand:
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-dist:
+    name: 'Diff Dist'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version: ${{ fromJson(inputs.nodeVersionMatrix) }}
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Build project
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v1
+        with:
+          node_version: ${{ matrix.node_version }}
+          dependency_command: ${{ inputs.dependencyCommand }}
+          build_command: ${{ inputs.buildCommand }}
+          lint_command: ${{ inputs.lintCommand }}
+
+      - name: Compare the expected and actual dist directories
+        run: |
+          if [ "$(git diff --ignore-space-at-eol dist/ | wc -l)" -gt "0" ]; then
+            echo "Detected differences between code and dist folder.  See status below:"
+            git diff
+            exit 1
+          fi
+        id: diff

@@ -3,6 +3,24 @@
 This repository contains a set of centrally configured, consistent and reusable CI pipeline components.
 
 ----
+## Check npm + ncc based GitHub Actions have a valid dist folder
+
+This workflow ensures that code changes in /src are reflected in the /dist folder produced by ncc.
+
+### actions-check-dist.yml
+
+```yaml
+name: 'Dist Diff'
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+
+jobs:
+  diff:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/actions-check-dist.yml@v1
+```
+
+----
 ## Check a PR has a valid SemVer increment
 
 This workflow ensures one `minor`,`major`,`patch`, or `skip-release` label is present on a PR.
@@ -39,6 +57,7 @@ jobs:
   check:
     uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag.yml@v1
 ```
+
 ----
 ## Lint and test an npm based project
 
