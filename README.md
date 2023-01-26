@@ -49,16 +49,16 @@ This will run `npm run lint` and `npm test` on a repository after building it wi
 
   ### inputs:
 
-| input | description| required | default | effective command |
-|---|---|---|---|---|
-| nodeVersionMatrix | | false | [ "18.x", "19.x" ] | |
-| dependencyCommand | | false | 'ci' | npm --loglevel warn ci |
-| buildCommand | | false | 'build' | npm run build |
-| lintCommand | | false | 'lint' | npm run lint |
-| osDependencies | | false | null | sudo apt-get install -y [packages] |
-| dockerComposeCommand | | false | './ci/docker-compose.yml' | docker-compose -f ./ci/docker-compose.yml up -d [components] |
-| dockerComposeComponents | | false | null | |
-| healthcheckScript | | false | './ci/healthcheck.sh' | bash ./ci/healthcheck.sh |
+| input | required | default | effective command |
+|---|---|---|---|
+| nodeVersionMatrix | false | [ "18.x", "19.x" ] | |
+| dependencyCommand | false | 'ci' | npm --loglevel warn ci |
+| buildCommand | false | 'build' | npm run build |
+| lintCommand | false | 'lint' | npm run lint |
+| osDependencies | false | null | sudo apt-get install -y [packages] |
+| dockerComposeCommand | false | './ci/docker-compose.yml' | docker-compose -f ./ci/docker-compose.yml up -d [components] |
+| dockerComposeComponents | false | null | |
+| healthcheckScript | false | './ci/healthcheck.sh' | bash ./ci/healthcheck.sh |
 
 ### test-npm.yml - unit tests only
 ```yaml
