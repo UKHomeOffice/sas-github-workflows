@@ -1,0 +1,36 @@
+name: 'npm Build Project'
+description: 'This action configures node and builds a project using npm'
+inputs:
+  node_version:
+    required: true
+    description: 'The required node version'
+  dependency_command:
+    required: false
+    description: 'The npm build command'
+  build_command:
+    required: false
+    description: 'The npm build command'
+  lint_command:
+    required: false
+    description: 'The npm lint command'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node_version }}
+        cache: 'npm'
+
+    - name: Install npm dependencies
+      run: npm --loglevel warn ${{ inputs.dependency_command || 'ci' }}
+      shell: bash
+
+    - name: Build project
+      run: npm run ${{ inputs.build_command || 'build' }}
+      shell: bash
+
+    - name: Lint project
+      run: npm run ${{ inputs.lint_command || 'lint' }}
+      shell: bash

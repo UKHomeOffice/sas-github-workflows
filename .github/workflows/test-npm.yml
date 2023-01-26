@@ -1,0 +1,68 @@
+name: 'Test - npm'
+on:
+  workflow_call:
+    inputs:
+      nodeVersionMatrix:
+        required: false
+        type: string
+        default: '[ "18.x", "19.x" ]'
+      dependencyCommand:
+        required: false
+        type: string
+      buildCommand:
+        required: false
+        type: string
+      lintCommand:
+        required: false
+        type: string
+      osDependencies:
+        required: false
+        type: string
+      dockerComposeCommand:
+        required: false
+        type: string
+      dockerComposeComponents:
+        required: false
+        type: string
+      healthcheckScript:
+        required: false
+        type: string
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: 'Unit and Integration Tests'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version: ${{ fromJson(inputs.nodeVersionMatrix) }}
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Build project
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v1
+        with:
+          node_version: ${{ matrix.node_version }}
+          dependency_command: ${{ inputs.dependencyCommand }}
+          build_command: ${{ inputs.buildCommand }}
+          lint_command: ${{ inputs.lintCommand }}
+
+      - name: Start integration infrastructure
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/start-integration-infrastructure@v1
+        with:
+          os_dependencies: ${{ inputs.osDependencies }}
+          docker_compose_command: ${{ inputs.dockerComposeCommand }}
+          docker_compose_components: ${{ inputs.dockerComposeComponents }}
+          healthcheck_script: ${{ inputs.healthcheckScript }}
+
+      - name: Run tests
+        run: npm test
