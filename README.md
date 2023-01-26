@@ -16,7 +16,7 @@ on:
 
 jobs:
   check:
-    uses: UKHomeOffice/sas-github-actions/.github/workflows/semver-check.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-check.yml@v1
 ```
 
 ----
@@ -37,7 +37,7 @@ on:
 
 jobs:
   check:
-    uses: UKHomeOffice/sas-github-actions/.github/workflows/semver-tag.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag.yml@v1
 ```
 ----
 ## Lint and test an npm based project
@@ -69,7 +69,7 @@ on:
 
 jobs:
   test:
-    uses: UKHomeOffice/sas-github-actions/.github/workflows/test-npm.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-npm.yml@v1
 ```````
 
 ### test-npm.yml - install extra OS deps and docker compose with custom npm arguments
@@ -81,7 +81,7 @@ on:
 
 jobs:
   test:
-    uses: UKHomeOffice/sas-github-actions/.github/workflows/test-npm.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-npm.yml@v1
     with:
       dependencyCommand: 'ci --production=false --no-optional'
       buildCommand: 'build-prod'
