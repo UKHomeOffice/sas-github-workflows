@@ -59,7 +59,7 @@ jobs:
 ```
 
 ----
-## Lint and test an npm based project
+## Lint, audit and test an npm based project
 
 This will run `npm run lint` and `npm test` on a repository after building it with `npm ci`.
 * It will run tests in parallel against 2 versions of node; `18`, `19`.
