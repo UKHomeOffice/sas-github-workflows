@@ -6,13 +6,19 @@ on:
         required: false
         type: string
         default: '[ "18.x", "19.x" ]'
-      dependencyCommand:
+      installCommand:
         required: false
         type: string
       buildCommand:
         required: false
         type: string
+      audiCommand:
+        required: false
+        type: string
       lintCommand:
+        required: false
+        type: string
+      testCommand:
         required: false
         type: string
       osDependencies:
@@ -52,9 +58,16 @@ jobs:
         uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v1
         with:
           node_version: ${{ matrix.node_version }}
-          dependency_command: ${{ inputs.dependencyCommand }}
+          install_command: ${{ inputs.installCommand }}
           build_command: ${{ inputs.buildCommand }}
-          lint_command: ${{ inputs.lintCommand }}
+
+      - name: Run audit
+        run: npm run ${{ inputs.auditCommand || 'audit' }}
+        shell: bash
+
+      - name: Run lint
+        run: npm run ${{ inputs.lintCommand || 'lint' }}
+        shell: bash
 
       - name: Start integration infrastructure
         uses: UKHomeOffice/sas-github-workflows/.github/actions/start-integration-infrastructure@v1
@@ -65,4 +78,5 @@ jobs:
           healthcheck_script: ${{ inputs.healthcheckScript }}
 
       - name: Run tests
-        run: npm test
+        run: npm ${{ inputs.testCommand || 'test' }}
+        shell: bash
