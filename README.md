@@ -56,22 +56,22 @@ jobs:
 ----
 ## Publish a docker image - npm
 
-This workflow builds and publishes a docker image.
+This workflow builds and publishes a docker image with a SemVer value.
 
 * Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
 * Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
 
-### docker-npm-main.yml
+### semver-tag-docker-npm.yml
 
 ```yaml
-name: 'Docker Build Main'
+name: 'SemVer Tag and Docker Build'
 on:
   pull_request:
     types: [ closed ]
 
 jobs:
   build:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/docker-npm-main.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-docker-npm.yml@v1
     with:
       installCommand: 'ci --production=false --no-optional'
       buildCommand: 'build-prod'
