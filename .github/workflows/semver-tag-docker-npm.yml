@@ -1,4 +1,4 @@
-name: 'Docker branch - npm'
+name: 'Semver Tag Docker - npm'
 on:
   workflow_call:
     inputs:
@@ -23,12 +23,12 @@ on:
         type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   docker:
-    name: 'Branch Publish'
+    name: 'Main Semver Tag'
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -39,6 +39,13 @@ jobs:
         with:
           submodules: true
 
+      - name: Calculate SemVer value
+        id: calculate
+        uses: UKHomeOffice/hocs-github-actions/.github/actions/calculate-semver-value@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_to_highest: ${{ github.base_ref == 'main' }}
+
       - name: Build project
         uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v1
         with:
@@ -46,12 +53,21 @@ jobs:
           install_command: ${{ inputs.installCommand }}
           build_command: ${{ inputs.buildCommand }}
 
-      - name: Publish branch image
+      - name: Publish main image
+        if: |
+          github.event.pull_request.merged == true &&
+          contains(github.event.pull_request.labels.*.name, 'skip-release') == false
         uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v1
         with:
           registry: ${{ inputs.registry }}
           username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}
           password: ${{ secrets.DOCKER_PASSWORD || secrets.QUAY_ROBOT_TOKEN }}
-          tag: ${{ github.event.pull_request.head.sha }}
+          tag: ${{ steps.calculate.outputs.version }}
           tag_latest: ${{ github.base_ref == 'main' }}
           image: ${{ inputs.image }}
+
+      - name: Tag Repository
+        uses: UKHomeOffice/semver-tag-action@v3
+        with:
+          tag: ${{ steps.calculate.outputs.version }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
