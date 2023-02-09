@@ -21,7 +21,7 @@ jobs:
 ```
 
 ----
-## Scan a docker image using Anchore on a branch - npm
+## Scan a docker image using Anchore - npm
 
 This workflow builds and scans a docker image using Anchore. 
 Optionally it pushes the image to a repository, tagging it with the SHA.
@@ -30,22 +30,26 @@ Optionally it pushes the image to a repository, tagging it with the SHA.
 * Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
 * Will only push with a label of `smoketest`
 
-### docker-npm-branch.yml
+### anchore-npm.yml
 
 ```yaml
-name: 'Docker Build Branch'
+name: "Anchore Scan"
+
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
     types: [ labeled, opened, reopened, synchronize ]
+  schedule:
+    - cron: '45 12 * * 1'
 
 jobs:
-  build:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/docker-npm-branch.yml@v1
+  scan:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/anchore-npm.yml@v1
     with:
       installCommand: 'ci --production=false --no-optional'
       buildCommand: 'build-prod'
       image: 'quay.io/ukhomeofficedigital/hocs-frontend'
-      repository: 'quay.io'
     secrets: inherit
 ```
 
@@ -53,7 +57,6 @@ jobs:
 ## Publish a docker image - npm
 
 This workflow builds and publishes a docker image.
-Optionally it pushes the image to a repository, tagging it with the SHA.
 
 * Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
 * Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
