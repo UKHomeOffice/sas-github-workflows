@@ -1,4 +1,4 @@
-name: 'Docker branch - npm'
+name: 'Anchore Scan Docker - npm'
 on:
   workflow_call:
     inputs:
@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   docker:
-    name: 'Branch Publish'
+    name: 'Anchore Scan'
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -49,7 +49,7 @@ jobs:
       - name: Anchore Scan image
         uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-scan@v1
 
-      - name: Publish branch image
+      - name: Publish image
         if: ${{ contains(github.event.pull_request.labels.*.name, 'smoketest') }}
         uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v1
         with:
