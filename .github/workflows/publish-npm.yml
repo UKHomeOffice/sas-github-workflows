@@ -1,0 +1,59 @@
+name: 'Publish - npm'
+on:
+  workflow_call:
+    inputs:
+      nodeVersion:
+        required: false
+        type: string
+        default: '18.x'
+      installCommand:
+        required: false
+        type: string
+        default: 'ci'
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: 'Main Publish'
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'skip-release') == false
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.nodeVersion }}
+          cache: 'npm'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@ukhomeoffice'
+
+      - name: Extract npm Package Version
+        run: echo "NEW_VERSION=$(cat package.json | jq -r '.version')" >> ${GITHUB_ENV}
+        shell: bash
+
+      - name: Install npm dependencies
+        run: npm --loglevel warn ${{ inputs.installCommand }}
+        shell: bash
+
+      - name: Publish npm package
+        run: npm publish
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Tag Repository
+        uses: UKHomeOffice/semver-tag-action@v3
+        with:
+          tag: ${{ env.NEW_VERSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -53,7 +53,94 @@ jobs:
     secrets: inherit
 ```
 
+## Publish an npm package to github packages
+
+This workflow builds and publishes an npm package to the GitHub packages npm registry with a SemVer value.
+
+### inputs:
+
+| input | required | default | effective command |
+|---|---|---|---|
+| nodeVersion | false | '18.x' | |
+| installCommand | false | 'ci' | npm --loglevel warn ci |
+
+### publish-npm.yml
+
+```yaml
+name: 'Publish - npm'
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  publish:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/publish-npm.yml@v1
+    secrets: inherit
+```
+
 ----
+
+## Check a PR has a valid SemVer increment
+
+This workflow ensures one `minor`,`major`,`patch`, or `skip-release` label is present on a PR.
+
+### semver-check.yml
+```yaml
+name: 'SemVer label Checker'
+on:
+  pull_request:
+    types: [ labeled, unlabeled, opened, reopened, synchronize ]
+
+jobs:
+  check:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-check.yml@v1
+```
+
+----
+
+## Check a PR has a valid SemVer increment and increment package.json version
+
+This workflow ensures one `minor`,`major`,`patch`, or `skip-release` label is present on a PR and increments the value field in package.json.
+
+* Is idempotent and amends the last commit with the new value for package.json. 
+
+### semver-check-increment-npm.yml
+
+```yaml
+name: 'Increment Package - npm'
+on:
+  pull_request:
+    types: [ labeled, unlabeled, opened, reopened, synchronize ]
+
+jobs:
+  version:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-check-increment-npm.yml@v1
+  ```
+
+----
+
+## Create a SemVer tag on PR merge
+
+This workflow tags the commit SHA with a SemVer value on PR merge.
+* This will not trigger if a label is added to the PR with the value of `skip-release`.
+* This will increment the last SemVer tag by either `minor`,`major`, or `patch`.
+* This will also walk a `major` version tag along with the SemVer value.
+  e.g. `v1` with tag `1.2.3`.
+
+### semver-tag.yml
+```yaml
+name: 'SemVer Tag'
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  check:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag.yml@v1
+```
+
+---
+
 ## Publish a docker image - npm
 
 This workflow builds and publishes a docker image with a SemVer value.
@@ -81,44 +168,6 @@ jobs:
 ```
 
 ----
-## Check a PR has a valid SemVer increment
-
-This workflow ensures one `minor`,`major`,`patch`, or `skip-release` label is present on a PR.
-
-### semver-check.yml
-```yaml
-name: 'SemVer label Checker'
-on:
-  pull_request:
-    types: [ labeled, unlabeled, opened, reopened, synchronize ]
-
-jobs:
-  check:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-check.yml@v1
-```
-
-----
-## Create a SemVer tag on PR merge
-
-This workflow tags the commit SHA with a SemVer value on PR merge.
-* This will not trigger if a label is added to the PR with the value of `skip-release`.
-* This will increment the last SemVer tag by either `minor`,`major`, or `patch`.
-* This will also walk a `major` version tag along with the SemVer value.
-  e.g. `v1` with tag `1.2.3`.
-
-### semver-tag.yml
-```yaml
-name: 'SemVer Tag'
-on:
-  pull_request:
-    types: [ closed ]
-
-jobs:
-  check:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag.yml@v1
-```
-
-----
 ## Lint, audit and test an npm based project
 
 This will run `npm run lint` and `npm test` on a repository after building it with `npm ci`.
@@ -131,7 +180,7 @@ This will run `npm run lint` and `npm test` on a repository after building it wi
 | input | required | default | effective command |
 |---|---|---|---|
 | nodeVersionMatrix | false | [ "18.x", "19.x" ] | |
-| dependencyCommand | false | 'ci' | npm --loglevel warn ci |
+| installCommand | false | 'ci' | npm --loglevel warn ci |
 | buildCommand | false | 'build' | npm run build |
 | lintCommand | false | 'lint' | npm run lint |
 | osDependencies | false | null | sudo apt-get install -y [packages] |
@@ -167,3 +216,5 @@ jobs:
       osDependencies: 'libreoffice'
       dockerComposeComponents: 'postgres'
 ```````
+
+----
