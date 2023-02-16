@@ -20,7 +20,38 @@ jobs:
     uses: UKHomeOffice/sas-github-workflows/.github/workflows/actions-check-dist.yml@v1
 ```
 
+## Scan a docker image using Anchore - gradle
+
+This workflow builds and scans a docker image using Anchore.
+Optionally it pushes the image to a repository, tagging it with the SHA.
+
+* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
+* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
+* Will only push with a label of `smoketest`
+
+### anchore-gradle.yml
+
+```yaml
+name: "Anchore Scan"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    types: [ labeled, opened, reopened, synchronize ]
+  schedule:
+    - cron: '45 12 * * 1'
+
+jobs:
+  scan:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/anchore-gradle.yml@v1
+    with:
+      image: 'quay.io/ukhomeofficedigital/hocs-frontend'
+    secrets: inherit
+```
+
 ----
+
 ## Scan a docker image using Anchore - npm
 
 This workflow builds and scans a docker image using Anchore. 
@@ -52,6 +83,8 @@ jobs:
       image: 'quay.io/ukhomeofficedigital/hocs-frontend'
     secrets: inherit
 ```
+
+----
 
 ## Publish an npm package to github packages
 
@@ -85,6 +118,7 @@ jobs:
 This workflow ensures one `minor`,`major`,`patch`, or `skip-release` label is present on a PR.
 
 ### semver-check.yml
+
 ```yaml
 name: 'SemVer label Checker'
 on:
@@ -128,6 +162,7 @@ This workflow tags the commit SHA with a SemVer value on PR merge.
   e.g. `v1` with tag `1.2.3`.
 
 ### semver-tag.yml
+
 ```yaml
 name: 'SemVer Tag'
 on:
@@ -140,6 +175,32 @@ jobs:
 ```
 
 ---
+
+## Publish a docker image - gradle
+
+This workflow builds and publishes a docker image with a SemVer value.
+
+* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
+* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
+
+### semver-tag-docker-gradle.yml
+
+```yaml
+name: 'SemVer Tag and Docker Build'
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  build:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-docker-gradle.yml@v1
+    with:
+      image: 'quay.io/ukhomeofficedigital/hocs-audit'
+    secrets: inherit
+
+```
+
+----
 
 ## Publish a docker image - npm
 
@@ -168,6 +229,7 @@ jobs:
 ```
 
 ----
+
 ## Lint, audit and test an npm based project
 
 This will run `npm run lint` and `npm test` on a repository after building it with `npm ci`.
@@ -175,7 +237,7 @@ This will run `npm run lint` and `npm test` on a repository after building it wi
 * Optionally this workflow will install dependencies required to run tests.
 * Optionally this workflow will start components using docker-compose to run end-to-end tests against.
 
-  ### inputs:
+### inputs:
 
 | input | required | default | effective command |
 |---|---|---|---|
@@ -189,6 +251,7 @@ This will run `npm run lint` and `npm test` on a repository after building it wi
 | healthcheckScript | false | './ci/healthcheck.sh' | bash ./ci/healthcheck.sh |
 
 ### test-npm.yml - unit tests only
+
 ```yaml
 name: 'Test'
 on:
@@ -201,6 +264,7 @@ jobs:
 ```````
 
 ### test-npm.yml - install extra OS deps and docker compose with custom npm arguments
+
 ```yaml
 name: 'Test'
 on:

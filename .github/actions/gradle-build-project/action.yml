@@ -1,0 +1,28 @@
+name: 'Gradle Build Project'
+description: 'This action configures Java and builds a jar using gradle'
+inputs:
+  java_version:
+    required: true
+    description: 'The required java version'
+  build_command:
+    required: false
+    description: 'The gradle build command'
+  github_token:
+    required: false
+    description: 'The github packages token'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: ${{ inputs.java_version }}
+        cache: 'gradle'
+
+    - name: Build project
+      run: ./gradlew clean ${{ inputs.build_command || 'assemble' }} --no-daemon
+      shell: bash
+      env:
+        PACKAGE_TOKEN: ${{inputs.github_token}}
