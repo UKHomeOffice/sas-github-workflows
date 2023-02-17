@@ -12,7 +12,7 @@ on:
       buildCommand:
         required: false
         type: string
-      audiCommand:
+      auditCommand:
         required: false
         type: string
       lintCommand:
@@ -33,7 +33,6 @@ on:
       healthcheckScript:
         required: false
         type: string
-
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
