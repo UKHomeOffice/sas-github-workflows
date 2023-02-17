@@ -28,6 +28,6 @@ runs:
       shell: bash
 
     - name: Start healthcheck
-      if: ${{ inputs.healthcheck_script || false }}
+      if: ${{ inputs.docker_compose_components || false }}
       run:  ${{ inputs.healthcheck_script || './ci/healthcheck.sh' }}
       shell: bash
