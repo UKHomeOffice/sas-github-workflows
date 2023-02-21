@@ -86,6 +86,56 @@ jobs:
 
 ----
 
+## Scan a repository using Codeql - gradle
+
+This is a [CodeQL](https://codeql.github.com/) static analysis action for jvm languages.
+This build can use the caching gradle actions over generic job that uses the `autobuild` step.
+Typically, this is run on changes to source code only, ignoring test code.
+
+### codeql-analysis-gradle.yml
+
+```yaml
+name: 'CodeQL'
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '45 12 * * 1'
+
+jobs:
+  analyze:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/codeql-analysis-gradle.yml@v1
+```
+
+----
+
+## Scan a repository using Codeql - npm
+
+This is a [CodeQL](https://codeql.github.com/) static analysis action for javascript.
+Because this is an interpreted language we don't need the `autobuild` step.
+Typically, this is run on on changes to source code only, ignoring test code.
+
+### codeql-analysis-npm.yml
+
+```yaml
+name: 'CodeQL'
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '45 12 * * 1'
+
+jobs:
+  analyze:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/codeql-analysis-npm.yml@v1
+```
+
+----
+
 ## Publish an npm package to github packages
 
 This workflow builds and publishes an npm package to the GitHub packages npm registry with a SemVer value.
