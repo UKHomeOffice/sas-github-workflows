@@ -1,0 +1,45 @@
+name: 'CodeQL - Gradle'
+on:
+  workflow_call:
+    inputs:
+      javaVersion:
+        required: false
+        type: string
+        default: '17'
+      buildCommand:
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: 'Analyze'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: 'java'
+
+      - name: Build project
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/gradle-build-project@v1
+        with:
+          java_version: ${{ inputs.javaVersion }}
+          build_command: ${{ inputs.buildCommand }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v2
