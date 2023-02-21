@@ -45,6 +45,7 @@ jobs:
         with:
           java_version: ${{ inputs.javaVersion }}
           build_command: ${{ inputs.buildCommand }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Start integration infrastructure
         uses: UKHomeOffice/sas-github-workflows/.github/actions/start-integration-infrastructure@v1
