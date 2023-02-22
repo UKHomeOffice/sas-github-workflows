@@ -1,0 +1,40 @@
+name: 'Anchore Scan Docker'
+on:
+  workflow_call:
+    inputs:
+      registry:
+        required: false
+        type: string
+      image:
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker:
+    name: 'Anchore Scan'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Anchore Scan image
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-scan@v1
+
+      - name: Publish image
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'smoketest') }}
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v1
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}
+          password: ${{ secrets.DOCKER_PASSWORD || secrets.QUAY_ROBOT_TOKEN }}
+          tag: ${{ github.event.pull_request.head.sha }}
+          image: ${{ inputs.image }}

@@ -3,6 +3,7 @@
 This repository contains a set of centrally configured, consistent and reusable CI pipeline components.
 
 ----
+
 ## Check npm + ncc based GitHub Actions have a valid dist folder
 
 This workflow ensures that code changes in /src are reflected in the /dist folder produced by ncc.
@@ -19,6 +20,40 @@ jobs:
   diff:
     uses: UKHomeOffice/sas-github-workflows/.github/workflows/actions-check-dist.yml@v1
 ```
+
+----
+
+## Scan a docker image using Anchore
+
+This workflow builds and scans a docker image using Anchore.
+Optionally it pushes the image to a repository, tagging it with the SHA.
+
+* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
+* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
+* Will only push with a label of `smoketest`
+
+### anchore.yml
+
+```yaml
+name: "Anchore Scan"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    types: [ labeled, opened, reopened, synchronize ]
+  schedule:
+    - cron: '45 12 * * 1'
+
+jobs:
+  scan:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/anchore.yml@v1
+    with:
+      image: 'quay.io/ukhomeofficedigital/hocs-outbound-proxy'
+    secrets: inherit
+```
+
+----
 
 ## Scan a docker image using Anchore - gradle
 
