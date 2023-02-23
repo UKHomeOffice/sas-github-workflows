@@ -1,0 +1,55 @@
+name: 'Publish - Gradle'
+on:
+  workflow_call:
+    inputs:
+      javaVersion:
+        required: false
+        type: string
+        default: '17'
+      buildCommand:
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: 'Main Publish'
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'skip-release') == false
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Calculate SemVer value
+        id: calculate
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/calculate-semver-value@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_to_highest: ${{ github.base_ref == 'main' }}
+
+      - name: Build project
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/gradle-build-project@v1
+        with:
+          java_version: ${{ inputs.javaVersion }}
+          build_command: ${{ inputs.buildCommand }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish maven package
+        run: ./gradlew publish -PartifactVersion=${{ steps.calculate.outputs.version }}
+        env:
+          PACKAGE_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Tag Repository
+        uses: UKHomeOffice/semver-tag-action@v3
+        with:
+          tag: ${{ steps.calculate.outputs.version }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

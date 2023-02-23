@@ -1,0 +1,40 @@
+name: 'Publish Branch - Gradle'
+on:
+  workflow_call:
+    inputs:
+      javaVersion:
+        required: false
+        type: string
+        default: '17'
+      buildCommand:
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: 'Branch Publish'
+    if: contains(github.event.pull_request.labels.*.name, 'smoketest') == true
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build project
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/gradle-build-project@v1
+        with:
+          java_version: ${{ inputs.javaVersion }}
+          build_command: ${{ inputs.buildCommand }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish maven package
+        run: ./gradlew publish -PartifactVersion=${{ github.event.pull_request.head.sha }}
+        env:
+          PACKAGE_TOKEN: ${{secrets.GITHUB_TOKEN}}
