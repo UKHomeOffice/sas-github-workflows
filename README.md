@@ -259,7 +259,33 @@ jobs:
     uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag.yml@v1
 ```
 
----
+----
+
+## Publish a docker image
+
+This workflow builds and publishes a docker image with a SemVer value.
+
+* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
+* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
+
+### semver-tag-docker.yml
+
+```yaml
+name: 'SemVer Tag and Docker Build'
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  build:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-docker.yml@v1
+    with:
+      image: 'quay.io/ukhomeofficedigital/hocs-toolbox'
+    secrets: inherit
+
+```
+
+----
 
 ## Publish a docker image - gradle
 

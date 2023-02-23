@@ -1,0 +1,51 @@
+name: 'Semver Tag Docker'
+on:
+  workflow_call:
+    inputs:
+      registry:
+        required: false
+        type: string
+      image:
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  docker:
+    name: 'Main Semver Tag'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Calculate SemVer value
+        id: calculate
+        uses: UKHomeOffice/hocs-github-actions/.github/actions/calculate-semver-value@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_to_highest: ${{ github.base_ref == 'main' }}
+
+      - name: Publish main image
+        if: |
+          github.event.pull_request.merged == true &&
+          contains(github.event.pull_request.labels.*.name, 'skip-release') == false
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v1
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}
+          password: ${{ secrets.DOCKER_PASSWORD || secrets.QUAY_ROBOT_TOKEN }}
+          tag: ${{ steps.calculate.outputs.version }}
+          tag_latest: ${{ github.base_ref == 'main' }}
+          image: ${{ inputs.image }}
+
+      - name: Tag Repository
+        uses: UKHomeOffice/semver-tag-action@v3
+        with:
+          tag: ${{ steps.calculate.outputs.version }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
