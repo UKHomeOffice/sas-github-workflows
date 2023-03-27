@@ -24,6 +24,9 @@ jobs:
   docker:
     name: 'Main Semver Tag'
     runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'skip-release') == false
 
     steps:
       - name: Checkout repository
@@ -46,9 +49,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish main image
-        if: |
-          github.event.pull_request.merged == true &&
-          contains(github.event.pull_request.labels.*.name, 'skip-release') == false
         uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v1
         with:
           registry: ${{ inputs.registry }}
