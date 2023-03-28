@@ -26,11 +26,9 @@ runs:
       run: npm --loglevel warn ${{ inputs.install_command || 'ci' }}
       shell: bash
       env:
-        NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
     - name: Build project
       run: npm run ${{ inputs.build_command || 'build' }}
       shell: bash
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@ukhomeoffice'
