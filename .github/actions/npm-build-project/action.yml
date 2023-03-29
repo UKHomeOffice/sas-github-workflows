@@ -10,6 +10,9 @@ inputs:
   build_command:
     required: false
     description: 'The npm build command'
+  github_token:
+    required: true
+    description: 'Access token to authenticate with GitHub package registry'
 
 runs:
   using: 'composite'
@@ -25,10 +28,8 @@ runs:
     - name: Install npm dependencies
       run: npm --loglevel warn ${{ inputs.install_command || 'ci' }}
       shell: bash
-      secrets:
-        NODE_AUTH_TOKEN: 
-          required: true
-          description: 'Github token to authenticate with github package registry'
+      env: 
+        NODE_AUTH_TOKEN: ${{ input.github_token }}
 
     - name: Build project
       run: npm run ${{ inputs.build_command || 'build' }}
