@@ -23,7 +23,9 @@ runs:
         scope: '@ukhomeoffice'
         
     - name: Install npm dependencies
-      run: npm --loglevel warn ${{ inputs.install_command || 'ci' }}
+      run: |
+        echo "Running the CI TRTEST"
+        npm --loglevel warn ${{ inputs.install_command || 'ci' }}
       shell: bash
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
