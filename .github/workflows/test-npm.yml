@@ -59,6 +59,8 @@ jobs:
           node_version: ${{ matrix.node_version }}
           install_command: ${{ inputs.installCommand }}
           build_command: ${{ inputs.buildCommand }}
+        secrets:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run audit
         run: npm run ${{ inputs.auditCommand || 'audit' }}
