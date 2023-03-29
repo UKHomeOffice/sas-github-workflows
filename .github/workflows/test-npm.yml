@@ -54,7 +54,7 @@ jobs:
           submodules: true
 
       - name: Build project
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@TR_BRANCH1
         with:
           node_version: ${{ matrix.node_version }}
           install_command: ${{ inputs.installCommand }}
