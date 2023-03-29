@@ -29,7 +29,7 @@ runs:
       run: npm --loglevel warn ${{ inputs.install_command || 'ci' }}
       shell: bash
       env: 
-        NODE_AUTH_TOKEN: ${{ input.github_token }}
+        NODE_AUTH_TOKEN: ${{ inputs.github_token }}
 
     - name: Build project
       run: npm run ${{ inputs.build_command || 'build' }}
