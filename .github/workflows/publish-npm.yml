@@ -46,7 +46,7 @@ jobs:
         run: npm --loglevel warn ${{ inputs.installCommand }}
         shell: bash
         env: 
-          NODE_AUTH_TOKEN: ${{ inputs.github_token }}
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Publish npm package
         run: npm publish
