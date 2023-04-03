@@ -9,7 +9,7 @@ on:
       installCommand:
         required: false
         type: string
-        default: 'ci'
+        default: 'ci --ignore-scripts'
 
 concurrency:
   group: ${{ github.workflow }}
