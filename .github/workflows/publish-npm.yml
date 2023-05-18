@@ -46,10 +46,35 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Reset Branch from Main Version
+        id: compare
+        run: |
+          localFile=$(cat package.json)
+          originFile=$(git show origin/${{ inputs.mainLineBranchName }}:package.json)
+          localVersion=$(echo $localFile | jq -r '.version')
+          originVersion=$(echo $originFile | jq -r '.version')
+          if [ "$localVersion" != "$originVersion" ]; then
+            npm --no-git-tag-version version $originVersion
+          fi
+        shell: bash
+
       - name: Bump Release Version
         run: |
           echo "NEW_VERSION=$(npm --no-git-tag-version version ${{ steps.label.outputs.matchedLabels }})" >> $GITHUB_ENV
         shell: bash
+
+      - name: Publish npm package
+        run: |
+          npm publish
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Tag Repository
+        uses: UKHomeOffice/semver-tag-action@v3
+        with:
+          tag: ${{ env.NEW_VERSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set PR data
         run: |
@@ -71,58 +96,10 @@ jobs:
           git push --set-upstream origin ${{ inputs.tagBranchName }} --force
         shell: bash
 
-      - name: Create a PR
+      - name: Create a Package.json PR
         run: |
           gh pr edit ${{ inputs.tagBranchName }} --title "$PR_TITLE" && gh pr reopen ${{ inputs.tagBranchName }} || gh pr create --fill -B ${{ inputs.mainLineBranchName }} -H ${{ inputs.tagBranchName }}
           gh pr merge ${{ inputs.tagBranchName }} --auto --rebase
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish:
-    name: 'Main Publish'
-    if: |
-      github.event.pull_request.merged == true &&
-      contains(github.event.pull_request.labels.*.name, 'skip-release') == false &&
-      github.event.pull_request.head.ref == 'semver_tag'
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.nodeVersion }}
-          cache: 'npm'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@ukhomeoffice'
-
-      - name: Extract npm Package Version
-        run: |
-          echo "NEW_VERSION=$(cat package.json | jq -r '.version')" >> ${GITHUB_ENV}
-        shell: bash
-
-      - name: Install npm dependencies
-        run: |
-          npm --loglevel warn ${{ inputs.installCommand }}
-        shell: bash
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-      - name: Publish npm package
-        run: |
-          npm publish
-        shell: bash
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-      - name: Tag Repository
-        uses: UKHomeOffice/semver-tag-action@v3
-        with:
-          tag: ${{ env.NEW_VERSION }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
