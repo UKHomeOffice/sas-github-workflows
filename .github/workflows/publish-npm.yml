@@ -73,7 +73,8 @@ jobs:
 
       - name: Create a PR
         run: |
-          gh pr edit ${{ inputs.tagBranchName }} --title "$PR_TITLE" --auto "1" && gh pr reopen ${{ inputs.tagBranchName }} --auto "1" || gh pr create --fill -B ${{ inputs.mainLineBranchName }} -H ${{ inputs.tagBranchName }} --auto "1"
+          gh pr edit ${{ inputs.tagBranchName }} --title "$PR_TITLE" && gh pr reopen ${{ inputs.tagBranchName }} || gh pr create --fill -B ${{ inputs.mainLineBranchName }} -H ${{ inputs.tagBranchName }}
+          gh pr merge ${{ inputs.tagBranchName }} --auto --merge
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
