@@ -171,34 +171,6 @@ jobs:
 
 ----
 
-## Publish an npm package to github packages
-
-This workflow builds and publishes an npm package to the GitHub packages npm registry with a SemVer value.
-
-### inputs:
-
-| input | required | default | effective command |
-|---|---|---|---|
-| nodeVersion | false | '18.x' | |
-| installCommand | false | 'ci' | npm --loglevel warn ci |
-
-### publish-npm.yml
-
-```yaml
-name: 'Publish - npm'
-on:
-  pull_request:
-    types: [ closed ]
-    branches: [ main ]
-
-jobs:
-  publish:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/publish-npm.yml@v2
-    secrets: inherit
-```
-
-----
-
 ## Check a PR has a valid SemVer increment
 
 This workflow ensures one `minor`,`major`,`patch`, or `skip-release` label is present on a PR.
@@ -215,28 +187,6 @@ jobs:
   check:
     uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-check.yml@v2
 ```
-
-----
-
-## Increment package.json version and raise a PR - npm
-
-This workflow increments the value field in package.json and raises a PR against main.
-
-* Is idempotent and amends the last commit with the new value for package.json.
-
-### semver-increment-npm.yml
-
-```yaml
-name: 'Increment Package - npm'
-on:
-  pull_request:
-    types: [ closed ]
-    branches: [ main ]
-
-jobs:
-  version:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-increment-npm.yml@v2
-  ```
 
 ----
 
@@ -337,6 +287,31 @@ jobs:
       installCommand: 'ci --production=false --no-optional'
       buildCommand: 'build-prod'
       image: 'quay.io/ukhomeofficedigital/hocs-frontend'
+    secrets: inherit
+
+```
+
+----
+
+
+## Publish an npm package
+
+This workflow builds and publishes an npm package with a SemVer value.
+
+
+### semver-tag-npm.yml
+
+```yaml
+name: 'SemVer Tag and npm Publish'
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  build:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-npm.yml@v2
+    with:
+      installCommand: 'ci --ignore-scripts'
     secrets: inherit
 
 ```
