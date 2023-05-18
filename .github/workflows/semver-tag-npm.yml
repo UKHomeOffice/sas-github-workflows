@@ -1,4 +1,4 @@
-name: 'Publish - npm'
+name: 'SemVer Tag'
 on:
   workflow_call:
     inputs:
@@ -16,11 +16,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
-    name: 'Main Publish'
+  tag:
+    name: 'Main SemVer Tag'
     if: |
       github.event.pull_request.merged == true &&
-      github.event.pull_request.head.ref == 'semver_tag'
+      contains(github.event.pull_request.labels.*.name, 'skip-release') == false
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -38,9 +38,16 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@ukhomeoffice'
 
-      - name: Extract npm Package Version
+      - name: Calculate SemVer value
+        id: calculate
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/calculate-semver-value@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_to_highest: ${{ github.base_ref == 'main' }}
+
+      - name: Bump Release Version
         run: |
-          echo "NEW_VERSION=$(cat package.json | jq -r '.version')" >> ${GITHUB_ENV}
+          npm --no-git-tag-version version ${{ steps.calculate.outputs.version }}
         shell: bash
 
       - name: Install npm dependencies
@@ -60,5 +67,5 @@ jobs:
       - name: Tag Repository
         uses: UKHomeOffice/semver-tag-action@v3
         with:
-          tag: ${{ env.NEW_VERSION }}
+          tag: ${{ steps.calculate.outputs.version }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
