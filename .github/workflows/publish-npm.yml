@@ -74,7 +74,6 @@ jobs:
       - name: Create Package.json update PR
         run: |
           gh pr edit ${{ inputs.tagBranchName }} --title "$PR_TITLE" && gh pr reopen ${{ inputs.tagBranchName }} || gh pr create --fill -B ${{ inputs.mainLineBranchName }} -H ${{ inputs.tagBranchName }}
-          gh pr merge ${{ inputs.tagBranchName }} --rebase
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
