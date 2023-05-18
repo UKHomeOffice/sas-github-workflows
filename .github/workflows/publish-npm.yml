@@ -20,7 +20,7 @@ jobs:
     name: 'Main Publish'
     if: |
       github.event.pull_request.merged == true &&
-      contains(github.event.pull_request.labels.*.name, 'skip-release') == false
+      github.event.pull_request.head.ref == 'semver_tag'
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -39,17 +39,20 @@ jobs:
           scope: '@ukhomeoffice'
 
       - name: Extract npm Package Version
-        run: echo "NEW_VERSION=$(cat package.json | jq -r '.version')" >> ${GITHUB_ENV}
+        run: |
+          echo "NEW_VERSION=$(cat package.json | jq -r '.version')" >> ${GITHUB_ENV}
         shell: bash
 
       - name: Install npm dependencies
-        run: npm --loglevel warn ${{ inputs.installCommand }}
+        run: |
+          npm --loglevel warn ${{ inputs.installCommand }}
         shell: bash
-        env: 
+        env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Publish npm package
-        run: npm publish
+        run: |
+          npm publish
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

@@ -1,0 +1,67 @@
+name: 'Increment package.json and raise a PR - npm'
+on:
+  workflow_call: 
+    inputs:
+      mainLineBranchName: 
+        required: false
+        type: string
+        default: main
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  increment:
+    name: 'Increment SemVer Value'
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'skip-release') == false &&
+      github.event.pull_request.head.ref != 'semver_tag'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Parse the SemVer label
+        id: label
+        uses: UKHomeOffice/match-label-action@v1
+        with:
+          labels: minor,major,patch
+          mode: singular
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Bump Release Version
+        run: |
+          echo "NEW_VERSION=$(npm --no-git-tag-version version ${{ steps.label.outputs.matchedLabels }})" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Set PR data
+        run: |
+          echo "PR_TITLE=🚀 Release $NEW_VERSION" >> ${GITHUB_ENV}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        shell: bash
+
+      - name: Create a branch
+        run: |
+          git checkout -b semver_tag
+          git add --all
+          git commit -m "$PR_TITLE" -m "Release ${{ github.event.repository.name }} $NEW_VERSION" -m "co-authored-by: $GITHUB_ACTOR <$GITHUB_ACTOR@users.noreply.github.com>"
+          git fetch
+          git pull --rebase origin ${{ inputs.mainLineBranchName }}
+          git push --set-upstream origin semver_tag --force
+        shell: bash
+
+      - name: Create Package.json update PR
+        run: |
+          gh pr edit semver_tag --title "$PR_TITLE" && gh pr reopen semver_tag || gh pr create --fill -B ${{ inputs.mainLineBranchName }} -H semver_tag
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
