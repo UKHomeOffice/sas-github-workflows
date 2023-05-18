@@ -26,7 +26,7 @@ concurrency:
 jobs:
 
   increment:
-    name: 'Calculate SemVer Value and Increment'
+    name: 'Increment SemVer Value'
     if: |
       github.event.pull_request.merged == true &&
       contains(github.event.pull_request.labels.*.name, 'skip-release') == false &&
@@ -74,7 +74,7 @@ jobs:
       - name: Create a PR
         run: |
           gh pr edit ${{ inputs.tagBranchName }} --title "$PR_TITLE" && gh pr reopen ${{ inputs.tagBranchName }} || gh pr create --fill -B ${{ inputs.mainLineBranchName }} -H ${{ inputs.tagBranchName }}
-          gh pr merge ${{ inputs.tagBranchName }} --auto --merge
+          gh pr merge ${{ inputs.tagBranchName }} --auto --rebase
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
