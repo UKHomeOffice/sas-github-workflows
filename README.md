@@ -18,7 +18,7 @@ on:
 
 jobs:
   diff:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/actions-check-dist.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/actions-check-dist.yml@v2
 ```
 
 ----
@@ -47,7 +47,7 @@ on:
 
 jobs:
   scan:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/anchore.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/anchore.yml@v2
     with:
       image: 'quay.io/ukhomeofficedigital/hocs-outbound-proxy'
     secrets: inherit
@@ -79,7 +79,7 @@ on:
 
 jobs:
   scan:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/anchore-gradle.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/anchore-gradle.yml@v2
     with:
       image: 'quay.io/ukhomeofficedigital/hocs-frontend'
     secrets: inherit
@@ -111,7 +111,7 @@ on:
 
 jobs:
   scan:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/anchore-npm.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/anchore-npm.yml@v2
     with:
       installCommand: 'ci --production=false --no-optional'
       buildCommand: 'build-prod'
@@ -141,7 +141,7 @@ on:
 
 jobs:
   analyze:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/codeql-analysis-gradle.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/codeql-analysis-gradle.yml@v2
 ```
 
 ----
@@ -166,7 +166,7 @@ on:
 
 jobs:
   analyze:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/codeql-analysis-npm.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/codeql-analysis-npm.yml@v2
 ```
 
 ----
@@ -189,10 +189,11 @@ name: 'Publish - npm'
 on:
   pull_request:
     types: [ closed ]
+    branches: [ main ]
 
 jobs:
   publish:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/publish-npm.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/publish-npm.yml@v2
     secrets: inherit
 ```
 
@@ -212,28 +213,29 @@ on:
 
 jobs:
   check:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-check.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-check.yml@v2
 ```
 
 ----
 
-## Check a PR has a valid SemVer increment and increment package.json version
+## Increment package.json version and raise a PR - npm
 
-This workflow ensures one `minor`,`major`,`patch`, or `skip-release` label is present on a PR and increments the value field in package.json.
+This workflow increments the value field in package.json and raises a PR against main.
 
-* Is idempotent and amends the last commit with the new value for package.json. 
+* Is idempotent and amends the last commit with the new value for package.json.
 
-### semver-check-increment-npm.yml
+### semver-increment-npm.yml
 
 ```yaml
 name: 'Increment Package - npm'
 on:
   pull_request:
-    types: [ labeled, unlabeled, opened, reopened, synchronize ]
+    types: [ closed ]
+    branches: [ main ]
 
 jobs:
   version:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-check-increment-npm.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-increment-npm.yml@v2
   ```
 
 ----
@@ -256,7 +258,7 @@ on:
 
 jobs:
   check:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag.yml@v2
 ```
 
 ----
@@ -278,7 +280,7 @@ on:
 
 jobs:
   build:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-docker.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-docker.yml@v2
     with:
       image: 'quay.io/ukhomeofficedigital/hocs-toolbox'
     secrets: inherit
@@ -304,7 +306,7 @@ on:
 
 jobs:
   build:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-docker-gradle.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-docker-gradle.yml@v2
     with:
       image: 'quay.io/ukhomeofficedigital/hocs-audit'
     secrets: inherit
@@ -330,7 +332,7 @@ on:
 
 jobs:
   build:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-docker-npm.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/semver-tag-docker-npm.yml@v2
     with:
       installCommand: 'ci --production=false --no-optional'
       buildCommand: 'build-prod'
@@ -371,7 +373,7 @@ on:
 
 jobs:
   test:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-npm.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-npm.yml@v2
 ```````
 
 ### test-npm.yml - install extra OS deps and docker compose with custom npm arguments
@@ -384,7 +386,7 @@ on:
 
 jobs:
   test:
-    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-npm.yml@v1
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-npm.yml@v2
     with:
       dependencyCommand: 'ci --production=false --no-optional'
       buildCommand: 'build-prod'
