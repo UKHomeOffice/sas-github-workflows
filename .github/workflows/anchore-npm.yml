@@ -40,18 +40,18 @@ jobs:
           submodules: true
 
       - name: Build project
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v2
         with:
           node_version: ${{ inputs.nodeVersion }}
           install_command: ${{ inputs.installCommand }}
           build_command: ${{ inputs.buildCommand }}
 
       - name: Anchore Scan image
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-scan@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-scan@v2
 
       - name: Publish image
         if: ${{ contains(github.event.pull_request.labels.*.name, 'smoketest') }}
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v2
         with:
           registry: ${{ inputs.registry }}
           username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}

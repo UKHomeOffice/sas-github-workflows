@@ -39,13 +39,13 @@ jobs:
 
       - name: Calculate SemVer value
         id: calculate
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/calculate-semver-value@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/calculate-semver-value@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_to_highest: ${{ github.base_ref == 'main' }}
 
       - name: Build project
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v2
         with:
           node_version: ${{ inputs.nodeVersion }}
           install_command: ${{ inputs.installCommand }}
@@ -55,7 +55,7 @@ jobs:
         if: |
           github.event.pull_request.merged == true &&
           contains(github.event.pull_request.labels.*.name, 'skip-release') == false
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v2
         with:
           registry: ${{ inputs.registry }}
           username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}

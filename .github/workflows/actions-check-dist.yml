@@ -36,7 +36,7 @@ jobs:
           submodules: true
 
       - name: Build project
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/npm-build-project@v2
         with:
           node_version: ${{ matrix.node_version }}
           dependency_command: ${{ inputs.dependencyCommand }}

@@ -35,7 +35,7 @@ jobs:
           languages: 'java'
 
       - name: Build project
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/gradle-build-project@v1
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/gradle-build-project@v2
         with:
           java_version: ${{ inputs.javaVersion }}
           build_command: ${{ inputs.buildCommand }}
