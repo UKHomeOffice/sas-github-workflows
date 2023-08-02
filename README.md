@@ -25,12 +25,19 @@ jobs:
 
 ## Scan a docker image using Anchore
 
-This workflow builds and scans a docker image using Anchore.
-Optionally it pushes the image to a repository, tagging it with the SHA.
+This workflow builds and scans a docker image using Anchore, optionally, pushing to a repository with the SHA.
 
-* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
-* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
-* Will only push with a label of `smoketest`
+When the `smoketest` of label is applied, the image will be pushed to either Docker (default) or ECR.
+
+**ECR**
+* Requires secret value of `AWS_ACCESS_KEY_ID`
+* Requires secret value of `AWS_SECRET_ACCESS_KEY`
+
+**Docker**
+* Requires secret value of `DOCKER_USER_NAME` or `QUAY_ROBOT_USER_NAME`
+* Requires secret value of `DOCKER_PASSWORD` or `QUAY_ROBOT_TOKEN`
+
+To push to `ECR`, an addition input is required within the with: `ecr: 'true'`.
 
 ### anchore.yml
 
@@ -57,12 +64,19 @@ jobs:
 
 ## Scan a docker image using Anchore - gradle
 
-This workflow builds and scans a docker image using Anchore.
-Optionally it pushes the image to a repository, tagging it with the SHA.
+This workflow builds and scans a docker image using Anchore, optionally, pushing to a repository with the SHA.
 
-* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
-* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
-* Will only push with a label of `smoketest`
+When the `smoketest` of label is applied, the image will be pushed to either Docker (default) or ECR.
+
+**ECR**
+* Requires secret value of `AWS_ACCESS_KEY_ID`
+* Requires secret value of `AWS_SECRET_ACCESS_KEY`
+
+**Docker**
+* Requires secret value of `DOCKER_USER_NAME` or `QUAY_ROBOT_USER_NAME`
+* Requires secret value of `DOCKER_PASSWORD` or `QUAY_ROBOT_TOKEN`
+
+To push to `ECR`, an addition input is required within the with: `ecr: 'true'`.
 
 ### anchore-gradle.yml
 
@@ -89,12 +103,19 @@ jobs:
 
 ## Scan a docker image using Anchore - npm
 
-This workflow builds and scans a docker image using Anchore. 
-Optionally it pushes the image to a repository, tagging it with the SHA.
+This workflow builds and scans a docker image using Anchore, optionally, pushing to a repository with the SHA.
 
-* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
-* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
-* Will only push with a label of `smoketest`
+When the `smoketest` of label is applied, the image will be pushed to either Docker (default) or ECR.
+
+**ECR**
+* Requires secret value of `AWS_ACCESS_KEY_ID`
+* Requires secret value of `AWS_SECRET_ACCESS_KEY`
+
+**Docker**
+* Requires secret value of `DOCKER_USER_NAME` or `QUAY_ROBOT_USER_NAME`
+* Requires secret value of `DOCKER_PASSWORD` or `QUAY_ROBOT_TOKEN`
+
+To push to `ECR`, an addition input is required within the with: `ecr: 'true'`.
 
 ### anchore-npm.yml
 
@@ -240,10 +261,17 @@ jobs:
 
 ## Publish a docker image
 
-This workflow builds and publishes a docker image with a SemVer value.
+This workflow builds and publishes a docker image to either Docker (default) or ECR with a SemVer value.
 
-* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
-* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
+**ECR**
+* Requires secret value of `AWS_ACCESS_KEY_ID`
+* Requires secret value of `AWS_SECRET_ACCESS_KEY`
+
+**Docker**
+* Requires secret value of `DOCKER_USER_NAME` or `QUAY_ROBOT_USER_NAME`
+* Requires secret value of `DOCKER_PASSWORD` or `QUAY_ROBOT_TOKEN`
+
+To push to `ECR`, an addition input is required within the with: `ecr: 'true'`.
 
 ### semver-tag-docker.yml
 
@@ -266,10 +294,17 @@ jobs:
 
 ## Publish a docker image - gradle
 
-This workflow builds and publishes a docker image with a SemVer value.
+This workflow builds and publishes a docker image to either Docker (default) or ECR with a SemVer value.
 
-* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
-* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
+**ECR**
+* Requires secret value of `AWS_ACCESS_KEY_ID`
+* Requires secret value of `AWS_SECRET_ACCESS_KEY`
+
+**Docker**
+* Requires secret value of `DOCKER_USER_NAME` or `QUAY_ROBOT_USER_NAME`
+* Requires secret value of `DOCKER_PASSWORD` or `QUAY_ROBOT_TOKEN`
+
+To push to `ECR`, an addition input is required within the with: `ecr: 'true'`.
 
 ### semver-tag-docker-gradle.yml
 
@@ -292,10 +327,17 @@ jobs:
 
 ## Publish a docker image - npm
 
-This workflow builds and publishes a docker image with a SemVer value.
+This workflow builds and publishes a docker image to either Docker (default) or ECR with a SemVer value.
 
-* Needs a secret value of DOCKER_USER_NAME or QUAY_ROBOT_USER_NAME
-* Needs a secret value of DOCKER_PASSWORD or QUAY_ROBOT_TOKEN
+**ECR**
+* Requires secret value of `AWS_ACCESS_KEY_ID`
+* Requires secret value of `AWS_SECRET_ACCESS_KEY`
+
+**Docker**
+* Requires secret value of `DOCKER_USER_NAME` or `QUAY_ROBOT_USER_NAME`
+* Requires secret value of `DOCKER_PASSWORD` or `QUAY_ROBOT_TOKEN`
+
+To push to `ECR`, an addition input is required within the with: `ecr: 'true'`.
 
 ### semver-tag-docker-npm.yml
 
