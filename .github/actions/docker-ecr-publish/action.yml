@@ -1,0 +1,66 @@
+name: 'Publish Docker Image to ECR'
+description: 'Authorises with ECR, builds, and pushes docker image to ECR repository'
+inputs:
+  access_key:
+    required: true
+    description: 'The ECR access key'
+  secret_key:
+    required: true
+    description: 'The ECR secret key'
+  region:
+    required: true
+    description: 'The ECR region'
+    default: 'eu-west-2'
+  image:
+    required: true
+    description: 'The docker image name'
+  tag:
+    required: true
+    description: 'The tag to use for the docker image'
+  tag_latest:
+    required: true
+    description: 'Should tag latest on the docker image'
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.access_key }}
+        aws-secret-access-key: ${{ inputs.secret_key }}
+        aws-region: ${{ inputs.region }}
+    
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Calculate metadata
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ inputs.image }}
+        tags: |
+          type=raw,value=${{ inputs.tag }}
+          type=raw,value=latest,enable=${{ inputs.tag_latest == 'true' }}
+
+    - name: Push container
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
