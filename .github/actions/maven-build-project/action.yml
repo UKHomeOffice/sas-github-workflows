@@ -1,0 +1,28 @@
+name: 'Maven Build Project'
+description: 'This action configures Java and builds a jar using maven'
+inputs:
+  java_version:
+    required: true
+    description: 'The required java version'
+  build_command:
+    required: false
+    description: 'The maven build command'
+  github_token:
+    required: false
+    description: 'The github packages token'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: ${{ inputs.java_version }}
+        cache: 'maven'
+
+    - name: Build project
+      run: ./mvn clean  ${{ inputs.build_command || 'package' }} --batch-mode --update-snapshots
+      shell: bash
+      env:
+        PACKAGE_TOKEN: ${{inputs.github_token}}
