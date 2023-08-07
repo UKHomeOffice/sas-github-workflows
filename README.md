@@ -177,7 +177,7 @@ This is a [CodeQL](https://codeql.github.com/) static analysis action for python
 Because this is an interpreted language we don't need the `autobuild` step.
 Typically, this is run on on changes to source code only, ignoring test code.
 
-### codeql-analysis-npm.yml
+### codeql-analysis-pip.yml
 
 ```yaml
 name: 'CodeQL'
