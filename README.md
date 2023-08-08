@@ -171,6 +171,31 @@ jobs:
 
 ----
 
+## Scan a repository using Codeql - pip
+
+This is a [CodeQL](https://codeql.github.com/) static analysis action for python.
+Because this is an interpreted language we don't need the `autobuild` step.
+Typically, this is run on on changes to source code only, ignoring test code.
+
+### codeql-analysis-pip.yml
+
+```yaml
+name: 'CodeQL'
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '45 12 * * 1'
+
+jobs:
+  analyze:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/codeql-analysis-pip.yml@v2
+```
+
+----
+
 ## Check a PR has a valid SemVer increment
 
 This workflow ensures one `minor`,`major`,`patch`, or `skip-release` label is present on a PR.
