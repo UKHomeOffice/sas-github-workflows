@@ -394,4 +394,19 @@ jobs:
       dockerComposeComponents: 'postgres'
 ```````
 
+### test-python.yml 
+
+Supports optional `pythonVersionMatrix` input that allows the specificity of Python version. A default is defined in the workflow.
+
+```yaml
+name: 'Test'
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+
+jobs:
+  test:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-python.yml@v2
+```````
+
 ----
