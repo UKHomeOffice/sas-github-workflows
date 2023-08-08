@@ -396,7 +396,7 @@ jobs:
 
 ### test-python.yml 
 
-Supports optional `pythonVersionMatrix` input that allows the specificity of Python version (default 3.11)
+Supports optional `pythonVersionMatrix` input that allows the specificity of Python version. A default is defined in the workflow.
 
 ```yaml
 name: 'Test'
