@@ -27,7 +27,7 @@ jobs:
 
 This workflow builds and scans a docker image using Anchore, optionally, pushing to a repository with the SHA.
 
-When the `smoketest` of label is applied, the image will be pushed to either Docker (default) or ECR.
+When the `smoketest` label is applied, the image will be pushed to either Docker (default) or ECR.
 
 **ECR**
 * Requires secret value of `AWS_ACCESS_KEY_ID`
@@ -66,7 +66,7 @@ jobs:
 
 This workflow builds and scans a docker image using Anchore, optionally, pushing to a repository with the SHA.
 
-When the `smoketest` of label is applied, the image will be pushed to either Docker (default) or ECR.
+When the `smoketest` label is applied, the image will be pushed to either Docker (default) or ECR.
 
 **ECR**
 * Requires secret value of `AWS_ACCESS_KEY_ID`
@@ -105,7 +105,7 @@ jobs:
 
 This workflow builds and scans a docker image using Anchore, optionally, pushing to a repository with the SHA.
 
-When the `smoketest` of label is applied, the image will be pushed to either Docker (default) or ECR.
+When the `smoketest` label is applied, the image will be pushed to either Docker (default) or ECR.
 
 **ECR**
 * Requires secret value of `AWS_ACCESS_KEY_ID`
