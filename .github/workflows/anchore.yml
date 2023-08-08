@@ -8,6 +8,10 @@ on:
       image:
         required: true
         type: string
+      ecr:
+        required: true
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -29,12 +33,25 @@ jobs:
       - name: Anchore Scan image
         uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-scan@v2
 
-      - name: Publish image
-        if: ${{ contains(github.event.pull_request.labels.*.name, 'smoketest') }}
+      - name: Publish image to Docker
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'smoketest') &&
+          inputs.ecr == false
         uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v2
         with:
           registry: ${{ inputs.registry }}
           username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}
           password: ${{ secrets.DOCKER_PASSWORD || secrets.QUAY_ROBOT_TOKEN }}
+          tag: ${{ github.event.pull_request.head.sha }}
+          image: ${{ inputs.image }}
+
+      - name: Publish image to ECR
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-ecr-publish@v1
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'smoketest') &&
+          inputs.ecr == true
+        with:
+          access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           tag: ${{ github.event.pull_request.head.sha }}
           image: ${{ inputs.image }}

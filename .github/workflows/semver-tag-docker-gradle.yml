@@ -15,6 +15,10 @@ on:
       image:
         required: true
         type: string
+      ecr:
+        required: true
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}
@@ -48,8 +52,19 @@ jobs:
           build_command: ${{ inputs.buildCommand }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish main image
+      - name: Publish image to ECR
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-ecr-publish@v2
+        if: inputs.ecr == true
+        with:
+          access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          tag: ${{ steps.calculate.outputs.version }}
+          tag_latest: ${{ github.base_ref == 'main' }}
+          image: ${{ inputs.image }}
+
+      - name: Publish image to Docker
         uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v2
+        if: inputs.ecr == false
         with:
           registry: ${{ inputs.registry }}
           username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}
