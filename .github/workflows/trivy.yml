@@ -1,0 +1,45 @@
+name: 'Trivy Scan Docker and Repository'
+on:
+  workflow_call:
+    inputs:
+      sarif:
+        required: true
+        description: 'Whether to generate a sarif report, otherwise a table is generated.'
+        type: string
+        default: 'false'
+      severity:
+        required: true
+        description: 'The severity of the vulnerabilities to report.'
+        type: string
+        default: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  image:
+    name: 'Trivy Image Scan'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Scan image
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/trivy-image-scan@v2
+        with: 
+          sarif: ${{ inputs.sarif }}
+          severity: ${{ inputs.severity }}
+  
+  repo:
+    name: 'Trivy Repo Scan'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Scan repository 
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/trivy-repo-scan@v2
+        with:
+          sarif: ${{ inputs.sarif }}
+          severity: ${{ inputs.severity }}
