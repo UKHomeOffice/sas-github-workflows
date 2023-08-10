@@ -22,6 +22,7 @@ jobs:
     name: 'Trivy Image Scan'
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
 
     steps:
@@ -40,6 +41,7 @@ jobs:
     name: 'Trivy Repo Scan'
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
 
     steps:
