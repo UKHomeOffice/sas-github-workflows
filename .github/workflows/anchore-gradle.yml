@@ -16,7 +16,6 @@ on:
         required: true
         type: string
       ecr:
-        required: true
         type: boolean
         default: false
 
