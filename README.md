@@ -259,7 +259,41 @@ jobs:
 
 ----
 
-## Publish a docker image
+## Publish a docker image with arbitrary tag
+
+This workflow builds and publishes a docker image to either Docker (default) or ECR with a specified tag.
+
+**ECR**
+* Requires secret value of `AWS_ACCESS_KEY_ID`
+* Requires secret value of `AWS_SECRET_ACCESS_KEY`
+
+**Docker**
+* Requires secret value of `DOCKER_USER_NAME` or `QUAY_ROBOT_USER_NAME`
+* Requires secret value of `DOCKER_PASSWORD` or `QUAY_ROBOT_TOKEN`
+
+To push to `ECR`, an addition input is required within the with: `ecr: 'true'`.
+
+### publish-docker.yml
+
+```yaml
+name: 'Build, Tag, and Push Docker Image'
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  build:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/publish-docker.yml@v2
+    with:
+      image: 'quay.io/ukhomeofficedigital/hocs-toolbox'
+      tag: ${{ github.event.pull_request.head.sha }}
+    secrets: inherit
+
+```
+
+----
+
+## Publish a docker image with SemVer version
 
 This workflow builds and publishes a docker image to either Docker (default) or ECR with a SemVer value.
 
@@ -292,7 +326,7 @@ jobs:
 
 ----
 
-## Publish a docker image - gradle
+## Publish a docker image with SemVer version - gradle
 
 This workflow builds and publishes a docker image to either Docker (default) or ECR with a SemVer value.
 
@@ -325,7 +359,7 @@ jobs:
 
 ----
 
-## Publish a docker image - npm
+## Publish a docker image with SemVer version - npm
 
 This workflow builds and publishes a docker image to either Docker (default) or ECR with a SemVer value.
 
