@@ -1,0 +1,56 @@
+name: 'Build, Tag, and Push Docker Image'
+on:
+  workflow_call:
+    inputs:
+      registry:
+        required: false
+        type: string
+      image:
+        required: true
+        type: string
+      tag: 
+        required: true
+        type: string
+      ecr:
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  docker:
+    name: 'Publish to Docker with specified tag'
+    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'skip-release') == false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Publish image to ECR
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-ecr-publish@v2
+        if: inputs.ecr == true
+        with:
+          access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          tag: ${{ inputs.tag }}
+          tag_latest: ${{ github.base_ref == 'main' }}
+          image: ${{ inputs.image }}
+
+      - name: Publish image to Docker
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-publish@v2
+        if: inputs.ecr == false
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}
+          password: ${{ secrets.DOCKER_PASSWORD || secrets.QUAY_ROBOT_TOKEN }}
+          tag: ${{ inputs.tag }}
+          tag_latest: ${{ github.base_ref == 'main' }}
+          image: ${{ inputs.image }}
