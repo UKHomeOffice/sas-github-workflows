@@ -293,6 +293,41 @@ jobs:
 
 ----
 
+## Publish a docker image with arbitrary version
+
+This workflow builds and publishes a docker image to either Docker (default) or ECR with an arbitrary value. This 
+arbitrary version is a required input into the workflow 
+
+**ECR**
+* Requires secret value of `AWS_ACCESS_KEY_ID`
+* Requires secret value of `AWS_SECRET_ACCESS_KEY`
+
+**Docker**
+* Requires secret value of `DOCKER_USER_NAME` or `QUAY_ROBOT_USER_NAME`
+* Requires secret value of `DOCKER_PASSWORD` or `QUAY_ROBOT_TOKEN`
+
+To push to `ECR`, an addition input is required within the with: `ecr: 'true'`.
+
+### semver-tag-docker.yml
+
+```yaml
+name: 'Build Docker and Tag Repository'
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  build:
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/tag-docker.yml@v2
+    with:
+      image: 'quay.io/ukhomeofficedigital/hocs-toolbox'
+      tag: ${{ github.sha }}
+    secrets: inherit
+
+```
+
+----
+
 ## Publish a docker image with SemVer version
 
 This workflow builds and publishes a docker image to either Docker (default) or ECR with a SemVer value.
