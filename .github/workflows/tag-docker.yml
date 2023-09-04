@@ -36,7 +36,7 @@ jobs:
         with:
           access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          tag: ${{ steps.calculate.outputs.version }}
+          tag: ${{ inputs.tag }}
           tag_latest: ${{ github.base_ref == 'main' }}
           image: ${{ inputs.image }}
 
@@ -47,7 +47,7 @@ jobs:
           registry: ${{ inputs.registry }}
           username: ${{ secrets.DOCKER_USER_NAME || secrets.QUAY_ROBOT_USER_NAME }}
           password: ${{ secrets.DOCKER_PASSWORD || secrets.QUAY_ROBOT_TOKEN }}
-          tag: ${{ steps.calculate.outputs.version }}
+          tag: ${{ inputs.tag }}
           tag_latest: ${{ github.base_ref == 'main' }}
           image: ${{ inputs.image }}
 
