@@ -63,5 +63,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: "refs/tags/${{ inputs.tag }}",
-              sha: ${{ inputs.sha || inputs.tag }}
+              sha: "${{ inputs.sha || inputs.tag }}"
             })
