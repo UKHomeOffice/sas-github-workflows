@@ -11,6 +11,9 @@ on:
       tag:
         required: true
         type: string
+      sha:
+        required: false
+        type: string
       ecr:
         type: boolean
         default: false
@@ -50,9 +53,15 @@ jobs:
           tag: ${{ inputs.tag }}
           tag_latest: ${{ github.base_ref == 'main' }}
           image: ${{ inputs.image }}
-
+          
       - name: Tag Repository
-        uses: UKHomeOffice/semver-tag-action@v3
+        uses: actions/github-script@v4
         with:
-          tag: ${{ inputs.tag }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ inputs.tag }}",
+              sha: ${{ inputs.sha || inputs.tag }}
+            })
