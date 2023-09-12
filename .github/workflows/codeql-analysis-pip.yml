@@ -1,6 +1,12 @@
 name: "CodeQL - pip"
 on:
   workflow_call:
+    inputs:
+      checkoutSubmodule:
+        required: false
+        description: 'Whether to checkout submodules.'
+        type: string
+        default: 'true'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +25,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: ${{ inputs.checkoutSubmodule }}
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2

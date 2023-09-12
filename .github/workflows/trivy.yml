@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       sarif:
-        required: true
+        required: false
         description: 'Whether to generate a sarif report, otherwise a table is generated.'
         type: string
         default: 'false'
@@ -12,6 +12,11 @@ on:
         description: 'The severity of the vulnerabilities to report.'
         type: string
         default: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+      checkoutSubmodule:
+        required: false
+        description: 'Whether to checkout submodules.'
+        type: string
+        default: 'true'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -29,7 +34,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: ${{ inputs.checkoutSubmodule }}
           
       - name: Scan image
         uses: UKHomeOffice/sas-github-workflows/.github/actions/trivy-image-scan@v2
@@ -48,7 +53,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: ${{ inputs.checkoutSubmodule }}
           
       - name: Scan repository 
         uses: UKHomeOffice/sas-github-workflows/.github/actions/trivy-repo-scan@v2
