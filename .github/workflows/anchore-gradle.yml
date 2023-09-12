@@ -18,6 +18,11 @@ on:
       ecr:
         type: boolean
         default: false
+      checkoutSubmodule:
+        required: false
+        description: 'Whether to checkout submodules.'
+        type: string
+        default: 'true'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -34,7 +39,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: ${{ inputs.checkoutSubmodule }}
 
       - name: Build project
         uses: UKHomeOffice/sas-github-workflows/.github/actions/gradle-build-project@v2

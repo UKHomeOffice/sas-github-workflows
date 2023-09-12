@@ -14,6 +14,11 @@ on:
       ecr:
         type: boolean
         default: false
+      checkoutSubmodule:
+        required: false
+        description: 'Whether to checkout submodules.'
+        type: string
+        default: 'true'
 
 concurrency:
   group: ${{ github.workflow }}
@@ -31,7 +36,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: ${{ inputs.checkoutSubmodule }}
 
       - name: Publish image to ECR
         uses: UKHomeOffice/sas-github-workflows/.github/actions/docker-ecr-publish@v2
