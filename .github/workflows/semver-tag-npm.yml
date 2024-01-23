@@ -65,7 +65,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Tag Repository
-        uses: UKHomeOffice/semver-tag-action@v3
+        uses: UKHomeOffice/semver-tag-action@v4
         with:
           tag: ${{ steps.calculate.outputs.version }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
