@@ -34,7 +34,6 @@ jobs:
     name: 'Trivy Image Scan'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       security-events: write
 
     steps:
@@ -43,12 +42,12 @@ jobs:
         with:
           submodules: ${{ inputs.checkoutSubmodule }}
 
-        - name: Build project
-          uses: UKHomeOffice/sas-github-workflows/.github/actions/gradle-build-project@v2
-          with:
-            java_version: ${{ inputs.javaVersion }}
-            build_command: ${{ inputs.buildCommand }}
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build project
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/gradle-build-project@v2
+        with:
+          java_version: ${{ inputs.javaVersion }}
+          build_command: ${{ inputs.buildCommand }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Scan image
         uses: UKHomeOffice/sas-github-workflows/.github/actions/trivy-image-scan@v2
