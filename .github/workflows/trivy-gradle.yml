@@ -34,7 +34,6 @@ jobs:
     name: 'Trivy Image Scan'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       security-events: write
 
     steps:
