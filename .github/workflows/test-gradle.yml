@@ -53,7 +53,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Start integration infrastructure
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/start-integration-infrastructure@v2
+        uses: UKHomeOffice/sas-github-workflows/.github/actions/start-integration-infrastructure@v3
         with:
           os_dependencies: ${{ inputs.osDependencies }}
           docker_compose_command: ${{ inputs.dockerComposeCommand }}
