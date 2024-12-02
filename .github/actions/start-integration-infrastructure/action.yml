@@ -28,7 +28,7 @@ runs:
     - name: Start docker-compose infrastructure
       if:  ${{ inputs.docker_compose_components || false }}
       run: |
-        ${{ docker_compose_binary || 'docker-compose' }} \
+        ${{ inputs.docker_compose_binary || 'docker-compose' }} \
         -f ${{ inputs.docker_compose_command || './ci/docker-compose.yml' }} up \
         -d ${{ inputs.docker_compose_components }}
       shell: bash
