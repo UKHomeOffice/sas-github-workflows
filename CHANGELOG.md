@@ -2,7 +2,7 @@
 
 ## V2 to V3 breaking changes
 ### [start-integration-infrastructure](./.github/actions/start-integration-infrastructure/action.yml): 
-* If you were using the `docker_compose_command` input to change the file used, you will need to expand this to the full command without `-d component,list`. e.g. an invocation of the action in v2 like this:
+* If you were using the `docker_compose_command` input to change the file used, you will need to expand this to the full command without `d`. e.g.
   ```yaml
   - name: Start integration infrastructure
     uses: UKHomeOffice/sas-github-workflows/.github/actions/start-integration-infrastructure@v2
