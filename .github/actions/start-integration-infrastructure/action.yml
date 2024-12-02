@@ -4,9 +4,12 @@ inputs:
   os_dependencies:
     required: false
     description: "Software dependencies to install e.g. libreoffice"
+  docker_compose_binary:
+    required: false
+    description: 'The docker compose binary e.g. `docker-compose` (Default) or `docker compose`'
   docker_compose_command:
     required: false
-    description: 'Docker compose command and file path e.g. `docker compose -f ./ci/docker-compose.yml up`'
+    description: 'Docker compose file path e.g. `./ci/docker-compose.yml`'
   docker_compose_components:
     required: false
     description: 'List of components to start up e.g. localstack, postgres'
@@ -24,7 +27,10 @@ runs:
 
     - name: Start docker-compose infrastructure
       if:  ${{ inputs.docker_compose_components || false }}
-      run: ${{ inputs.docker_compose_command || 'docker compose -f ./ci/docker-compose.yml up' }} -d ${{ inputs.docker_compose_components }}
+      run: |
+        ${{ docker_compose_binary || 'docker-compose' }} \
+        -f ${{ inputs.docker_compose_command || './ci/docker-compose.yml' }} up \
+        -d ${{ inputs.docker_compose_components }}
       shell: bash
 
     - name: Start healthcheck
