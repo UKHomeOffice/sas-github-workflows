@@ -54,22 +54,3 @@ jobs:
         with: 
           sarif: ${{ inputs.sarif }}
           severity: ${{ inputs.severity }}
-  
-  repo:
-    name: 'Trivy Repo Scan'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: ${{ inputs.checkoutSubmodule }}
-          
-      - name: Scan repository 
-        uses: UKHomeOffice/sas-github-workflows/.github/actions/trivy-repo-scan@v2
-        with:
-          sarif: ${{ inputs.sarif }}
-          severity: ${{ inputs.severity }}
