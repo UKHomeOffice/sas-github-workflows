@@ -21,7 +21,7 @@ runs:
         tags: localbuild/testimage:latest
         load: true
         cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-to: type=gha,mode=max,ignore-error=true
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@v0.36.0
