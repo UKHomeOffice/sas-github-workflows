@@ -20,6 +20,10 @@ inputs:
     required: true
     description: 'Should tag latest on the docker image'
 
+  platforms:
+    required: false
+    description: 'Comma separated list of target platforms to build for. Defaults to the previous hardcoded behaviour, so existing callers are unaffected.'
+    default: 'linux/amd64,linux/arm64'
 runs:
   using: 'composite'
   steps:
@@ -50,7 +54,7 @@ runs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        platforms: linux/amd64,linux/arm64
+        platforms: ${{ inputs.platforms }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}

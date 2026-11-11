@@ -17,6 +17,12 @@ on:
         type: string
         default: 'true'
 
+      platforms:
+        required: false
+        type: string
+        description: 'Comma separated list of target platforms to build for.'
+        default: 'linux/amd64,linux/arm64'
+
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
@@ -50,6 +56,7 @@ jobs:
           secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           tag: ${{ steps.calculate.outputs.version }}
           tag_latest: ${{ github.base_ref == 'main' }}
+          platforms: ${{ inputs.platforms }}
           image: ${{ inputs.image }}
 
       - name: Publish image to Docker
@@ -61,6 +68,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD || secrets.QUAY_ROBOT_TOKEN }}
           tag: ${{ steps.calculate.outputs.version }}
           tag_latest: ${{ github.base_ref == 'main' }}
+          platforms: ${{ inputs.platforms }}
           image: ${{ inputs.image }}
 
       - name: Tag Repository
